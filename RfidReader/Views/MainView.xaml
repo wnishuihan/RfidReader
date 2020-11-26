@@ -1,0 +1,961 @@
+﻿<UserControl 
+    x:Class="RfidReader.Views.MainView"
+    xmlns:dxwui="http://schemas.devexpress.com/winfx/2008/xaml/windowsui"
+    xmlns:dxe="http://schemas.devexpress.com/winfx/2008/xaml/editors"
+    xmlns:dxg="http://schemas.devexpress.com/winfx/2008/xaml/grid" 
+    xmlns:dxb="http://schemas.devexpress.com/winfx/2008/xaml/bars"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:dxmvvm="http://schemas.devexpress.com/winfx/2008/xaml/mvvm" 
+    xmlns:ViewModels="clr-namespace:RfidReader.ViewModels"
+    mc:Ignorable="d" d:DesignHeight="660" d:DesignWidth="970">
+    <dxmvvm:Interaction.Behaviors>
+        <dx:DXMessageBoxService/>
+    </dxmvvm:Interaction.Behaviors>
+    <UserControl.DataContext>
+        <ViewModels:MainViewModel/>
+    </UserControl.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" Grid.Column="0" Margin="0,0,0,30" Grid.RowSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Label Content="{DynamicResource Header}" Margin="10, 10, 10, 8.2" FontSize="24"/>
+            <Separator Grid.Row="1"/>
+            <GroupBox Header="{DynamicResource DevConnection}" Margin="5,10,5,4.667" Grid.Row="1" Grid.Column="0" FontSize="14" Grid.RowSpan="2">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <!--设备号-->
+                    <Label Content="{DynamicResource DevNo}" Height="30" Margin="5" FontSize="14" Grid.Row="0"/>
+                    <ComboBox IsEditable="False" IsEnabled="{Binding IsReaderAddressEnabled}" Margin="5" Grid.Column="1" Grid.Row="0" FontSize="14" SelectedIndex="{Binding ReaderAddress}" ItemsSource="{Binding ReaderAddressInts}"/>
+                    <Label Content="{DynamicResource Baudrate}" Height="30" Margin="5" FontSize="14" Grid.Row="1" Grid.Column="0" />
+                    <ComboBox IsEditable="False" IsEnabled="{Binding IsBaudrateEnabled}" SelectedIndex="{Binding BaudRate}" Margin="5" Grid.Column="1" Grid.Row="1" FontSize="14" ItemsSource="{Binding BaudRateList}"/>
+                    <!--串口-->
+                    <GroupBox x:Name="GpbSerialPort" Header="{DynamicResource SerialPort}" Margin="0" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" FontSize="14" IsEnabled="{Binding IsSerialPortEnabled}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Label Content="{DynamicResource SerialNumber}" Height="30" Margin="5" FontSize="14" Grid.Row="0" Grid.Column="0" />
+                            <ComboBox IsEditable="False" x:Name="CmbSerialPort" Margin="5" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" FontSize="14" ItemsSource="{Binding AvailableSerialPorts}" SelectedItem="{Binding SerialPortName}" SelectedIndex="{Binding SelectedSerialPortIndex}">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand EventName="EditValueChanged"/>
+                                </dxmvvm:Interaction.Behaviors>
+                            </ComboBox>
+
+                            <Button x:Name="BtnOpenSerialPort" Content="{DynamicResource Open}" Margin="5" Grid.Row="1" Grid.Column="1" FontSize="14" IsEnabled="{Binding IsOpenSerialPortEnabled}">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand EventName="Click" Command="{Binding OpenSerialPortCommand}"/>
+                                </dxmvvm:Interaction.Behaviors>
+                            </Button>
+                            <Button x:Name="BtnClosedSerialPort" Content="{DynamicResource Close}" Margin="5" Grid.Row="1" Grid.Column="2" FontSize="14" IsEnabled="{Binding IsClosedSerialPortEnabled}">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand EventName="Click" Command="{Binding ClosedSerialPortCommand}"/>
+                                </dxmvvm:Interaction.Behaviors>
+                            </Button>
+                            <Button x:Name="BtnRefreshSerialPort" Content="{DynamicResource Refresh}" Margin="5" Grid.Row="1" Grid.Column="0" FontSize="14" IsEnabled="{Binding IsRefreshEnabled}">
+                                <dxmvvm:Interaction.Behaviors>
+                                    <dxmvvm:EventToCommand EventName="Click" Command="{Binding RefreshSerialPortCommand}"/>
+                                </dxmvvm:Interaction.Behaviors>
+                            </Button>
+                        </Grid>
+                    </GroupBox>
+                    <!--网口-->
+                    <GroupBox x:Name="GpbNetwork" Header="{DynamicResource Network}" Margin="0, 5, 0, 0" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" FontSize="14" IsEnabled="{Binding IsNetworkEnabled}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <!--网口连接-->
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <!--<RowDefinition Height="Auto"/>-->
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <!--<RadioButton Content="客户端模式" IsChecked="True" Margin="5" Grid.Column="1" Grid.ColumnSpan="2"/>-->
+                                <Label Content="{DynamicResource Ip}" Height="30" Margin="5" Grid.Row="0" Grid.Column="0" />
+                                <Label Content="{DynamicResource Port}" Height="30" Margin="5" Grid.Row="1" Grid.Column="0" />
+                                <TextBox Margin="5" VerticalContentAlignment="Center" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding IpAddress}" IsEnabled="{Binding IsIpAddressEnabled}"/>
+                                <TextBox Margin="5" VerticalContentAlignment="Center" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Port}" IsEnabled="{Binding IsPortEnabled}"/>
+                                <Button Content="{DynamicResource Search}" Grid.Row="2" Grid.Column="0" Margin="5" IsEnabled="{Binding IsSearchButtonEnabled}">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding GotoSearchPageCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                                <Button x:Name="BtnNetConnection" Content="{DynamicResource Connection}" Margin="5" Grid.Row="2" Grid.Column="1" IsEnabled="{Binding IsConnectionButtonEnabled}">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding ConnectionCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                                <Button x:Name="BtnNetDisConnection" Content="{DynamicResource DisConnect}" Margin="5" Grid.Row="2" Grid.Column="2" IsEnabled="{Binding IsDisConnectionButtonEnabled}">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding DisConnectionCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </GroupBox>
+                    <Separator Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom"/>
+                    <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition  Width="Auto"/>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Label Content="{DynamicResource Theme}" Grid.Row="1" Grid.Column="0" Margin="0, 0, 5, 5"/>
+                        <ComboBox x:Name="CmbTheme" Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" SelectedIndex="0" IsEditable="False">
+                            <ComboBoxItem>Metropolis Light</ComboBoxItem>
+                            <ComboBoxItem>Metropolis Dark</ComboBoxItem>
+                            <ComboBoxItem>Win10 Light</ComboBoxItem>
+                            <ComboBoxItem>Office2019 White</ComboBoxItem>
+                            <ComboBoxItem>Office2019 Black</ComboBoxItem>
+                            <ComboBoxItem>Office2019 Colorful</ComboBoxItem>
+                            <ComboBoxItem>Office2019 DarkGray</ComboBoxItem>
+                            <ComboBoxItem>Office2016 White</ComboBoxItem>
+                            <ComboBoxItem>Office2016 Black</ComboBoxItem>
+                            <ComboBoxItem>Office2016 Colorful</ComboBoxItem>
+                            <ComboBoxItem>Office2013 LightGray</ComboBoxItem>
+                            <ComboBoxItem>Office2013 DarkGray</ComboBoxItem>
+                        </ComboBox>
+                        <Label Content="{DynamicResource Language}" Grid.Row="0" Grid.Column="0" Margin="0, 5, 5, 5"/>
+                        <RadioButton x:Name="RdbChinese" Content="中文" Grid.Row="0" Grid.Column="1" IsChecked="{Binding Chinese}" Margin="0, 5, 0, 0" Checked="RadioButton_Checked"/>
+                        <RadioButton x:Name="RdbEnglish" Content="English" Grid.Row="0" Grid.Column="2" IsChecked="{Binding English}" Margin="0, 5, 0, 0" Checked="RadioButton_Checked"/>
+                    </Grid>
+                </Grid>
+            </GroupBox>
+        </Grid>
+        <dxwui:PageView AnimationType="SlideHorizontal" Grid.Row="0" Grid.Column="1" Margin="0,5,5,5" Grid.ColumnSpan="2" SelectedIndex="{Binding PageViewSelectedIndex}">
+            <dxmvvm:Interaction.Behaviors>
+                <dxmvvm:EventToCommand EventName="SelectionChanged" Command="{Binding PageViewSelectedItemChangedCommand}"/>
+            </dxmvvm:Interaction.Behaviors>
+            <dxwui:PageViewItem Header="{DynamicResource IdentifyPage}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition/>
+                        <RowDefinition Height="Auto" MinHeight="43.333"/>
+                    </Grid.RowDefinitions>
+                    <Separator Background="#FFE5E5E5" Margin="0,2,0.333,2"/>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,5,5,10">
+                        <RadioButton Content="{DynamicResource SingleReader}" IsChecked="{Binding IsSingleTagIdentify}" FontSize="14"/>
+                        <RadioButton Content="{DynamicResource MultiReader}" FontSize="14" Margin="20, 0, 0, 0" IsChecked="{Binding IsMultiTagIdentify}"/>
+                    </StackPanel>
+                    <dxg:GridControl x:Name="TagGrid" Grid.Row="1" Grid.RowSpan="3" Margin="0,37,0,-0.333" FontSize="14" ItemsSource="{Binding TagRecords}" SelectionMode="Row" IsFilterEnabled="False" ShowAllTableValuesInCheckedFilterPopup="False" AllowColumnMRUFilterList="False" AllowMRUFilterList="False">
+                        <dxg:GridControl.Columns>
+                            <dxg:GridColumn x:Name="ColId" Header="{DynamicResource Number}" FieldName="Id" Width="50" AllowResizing="False" FixedWidth="true" ReadOnly="True"/>
+                            <dxg:GridColumn x:Name="ColEpc" Header="{DynamicResource Data}" FieldName="EpcContent" ReadOnly="True"/>
+                            <dxg:GridColumn x:Name="ColDeviceNo" Header="{DynamicResource DeviceNo}" FieldName="DeviceNo" Width="40" ReadOnly="True"/>
+                            <dxg:GridColumn x:Name="ColAntNo" Header="{DynamicResource Antenna}" FieldName="AntennaNo" Width="40" ReadOnly="True"/>
+                            <dxg:GridColumn x:Name="ColCount" Header="{DynamicResource Count}" FieldName="Count" Width="30" ReadOnly="True"/>
+                        </dxg:GridControl.Columns>
+                        <!--<dxg:GridControl.TotalSummary>
+                            <dxg:GridSummaryItem FieldName="EpcContent" SummaryType="Count" Alignment="Right"/>
+                        </dxg:GridControl.TotalSummary>-->
+                        <dxg:GridControl.View>
+                            <dxg:TableView x:Name="View" AllowFixedGroups="false" ShowGroupedColumns="false" AllowCascadeUpdate="True" AllowScrollAnimation="True" NavigationStyle="Row" AutoWidth="True" ShowFixedTotalSummary="True" AllowEditing="False" ShowGroupPanel="False" AllowFilterEditor="False" AllowColumnFiltering="False"/>
+                        </dxg:GridControl.View>
+                    </dxg:GridControl>
+                    <StackPanel Orientation="Horizontal" Grid.Row="3" Margin="0,0.667,0.333,-0.333">
+                        <Button Content="{DynamicResource Read}" Margin="5" FontSize="14" IsEnabled="{Binding IsReadTagButtonEnabled}">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand EventName="Click" Command="{Binding IdentifyTagCommand}"/>
+                            </dxmvvm:Interaction.Behaviors>
+                        </Button>
+                        <Button Content="{DynamicResource Stop}" Margin="5" FontSize="14" IsEnabled="{Binding IsStopReadTagButtonEnabled}">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand EventName="Click" Command="{Binding StopReadTagCommand}"/>
+                            </dxmvvm:Interaction.Behaviors>
+                        </Button>
+                        <Viewbox Width="40"/>
+                        <Button Content="{DynamicResource Clear}" Margin="5" FontSize="14">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand EventName="Click" Command="{Binding ClearTagRecordsCommand}"/>
+                            </dxmvvm:Interaction.Behaviors>
+                        </Button>
+                        <Viewbox Width="55"/>
+                        <CheckBox Content="{DynamicResource AutoSave}" Margin="5" FontSize="14" IsChecked="{Binding AutoSave}"/>
+                    </StackPanel>
+                </Grid>
+            </dxwui:PageViewItem>
+            <dxwui:PageViewItem Header="{DynamicResource OperatePage}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Separator Background="#FFE5E5E5"/>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Visibility="Hidden" Header="{DynamicResource ReadTagHeader}" Grid.Row="0" Grid.Column="0" Margin="5, 5, 5, 0" FontSize="14" IsEnabled="{Binding IsReadTagEnabled}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="{DynamicResource Area}" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                                <ComboBox IsEditable="False" Margin="5" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" FontSize="14" SelectedIndex="{Binding ReadTagArea}">
+                                    <ComboBoxItem Content="{DynamicResource ReservedArea}"/>
+                                    <ComboBoxItem Content="{DynamicResource EpcArea}"/>
+                                    <ComboBoxItem Content="{DynamicResource TidArea}"/>
+                                    <ComboBoxItem Content="{DynamicResource UserArea}"/>
+                                </ComboBox>
+                                <Label Content="{DynamicResource Address}" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
+                                <dxe:SpinEdit ToolTip="{DynamicResource ReadTagTip1}" Margin="5" Grid.Column="1" Grid.Row="1" FontSize="14" MaxValue="{Binding ReadTagMaxAddress}" MinValue="{Binding ReadTagMinAddress}" IsFloatValue="False" EditValue="{Binding ReadTagAddress}" Mask="n0"/>
+                                <Label Content="{DynamicResource LengthWithRisk}" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" />
+                                <dxe:SpinEdit Margin="5" Grid.Column="3" Grid.Row="1" FontSize="14" MaxValue="{Binding ReadTagMaxLength}" MinValue="{Binding ReadTagMinLength}" IsFloatValue="False" EditValue="{Binding ReadTagLength}" Mask="n0"/>
+                                <Label Content="{DynamicResource WriteData}" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+                                <dxe:TextEdit Margin="5" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" FontSize="14" EditValue="{Binding ReadTagContent}" IsReadOnly="True"/>
+                                <Button Content="{DynamicResource ReadTag}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Margin="5">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding ReadTagCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="{DynamicResource RwTagHeader}" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="5, 5, 0, 5" FontSize="14" IsEnabled="{Binding IsRwTagEnabled}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Label Content="{DynamicResource Area}" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+                                <ComboBox IsEditable="False" Margin="5" Grid.Row="0" Grid.Column="1" FontSize="14" SelectedIndex="{Binding RwTagArea}">
+                                    <ComboBoxItem Content="{DynamicResource ReservedArea}"/>
+                                    <ComboBoxItem Content="{DynamicResource EpcArea}"/>
+                                    <ComboBoxItem Content="{DynamicResource TidArea}"/>
+                                    <ComboBoxItem Content="{DynamicResource UserArea}"/>
+                                </ComboBox>
+                                <Label Content="{DynamicResource Address}" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
+                                <ComboBox Margin="5" Grid.Row="1" Grid.Column="1" FontSize="14" SelectedItem="{Binding RwTagAddress}" ItemsSource="{Binding RwTagAddressRange}"/>
+                                <Label Content="{DynamicResource LengthWithRisk}" Grid.Row="1" Grid.Column="2" VerticalAlignment="Center"/>
+                                <ComboBox Margin="5" Grid.Row="1" Grid.Column="3" FontSize="14" ItemsSource="{Binding RwTagLengthRange}" SelectedItem="{Binding RwTagLength}"/>
+                                <!--<Label Content="{DynamicResource WriteTagTip1}" Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2" FontSize="10" HorizontalContentAlignment="Center"/>-->
+                                <Label Content="{DynamicResource WriteData}" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+                                <dxe:TextEdit Margin="5" Grid.Column="1" Grid.Row="2" Grid.ColumnSpan="3" FontSize="14" EditValue="{Binding RwTagContent}"/>
+                                <TextBlock TextWrapping="Wrap" Text="{DynamicResource WriteTagTip2}" TextAlignment="Center" Margin="0, 10, 0, 15" FontSize="10" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4"/>
+                                <Button Content="{DynamicResource ReadTag}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="0, 0, 10, 0">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding ReadTagCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                                <Button Content="{DynamicResource WriteTag}" Grid.Row="4" Grid.Column="2" Grid.ColumnSpan="2">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding WriteTagCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="{DynamicResource TagOtherOperate}" Grid.Row="1" Grid.Column="0" Margin="5, 5, 5, 0" FontSize="14" IsEnabled="{Binding IsOtherOperateEnabled}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Button Content="{DynamicResource InitializeTag}" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="5, 0, 5, 5">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding InitilizeTagCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                                <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"/>
+                                <Label Content="{DynamicResource OperateArea}" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+                                <ComboBox IsEditable="False" Margin="5" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" FontSize="14" SelectedIndex="{Binding LockTagPermission}">
+                                    <ComboBoxItem>USER</ComboBoxItem>
+                                    <ComboBoxItem>TID</ComboBoxItem>
+                                    <ComboBoxItem>EPC</ComboBoxItem>
+                                    <ComboBoxItem>ACCESS</ComboBoxItem>
+                                    <ComboBoxItem>KILL</ComboBoxItem>
+                                    <ComboBoxItem>ALL</ComboBoxItem>
+                                </ComboBox>
+                                <Label Content="{DynamicResource AccssPwd}" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center"/>
+                                <dxe:TextEdit Margin="5" Grid.Column="1" Grid.Row="3" Grid.ColumnSpan="2" FontSize="14" EditValue="{Binding AccessPassword}"/>
+                                <Button Content="{DynamicResource LockTag}" Grid.Row="4" Grid.Column="1" Margin="5">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding LockTagCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                                <Button Content="{DynamicResource UnlockTag}" Grid.Row="4" Grid.Column="2" Margin="5">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding UnLockTagCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                                <Label Content="{DynamicResource KilPwd}" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center"/>
+                                <dxe:TextEdit Margin="5" Grid.Column="1" Grid.Row="5" Grid.ColumnSpan="2" FontSize="14" EditValue="{Binding KillPassword}"/>
+                                <Button Content="{DynamicResource KillTag}" Grid.Row="6" Grid.Column="1" Grid.ColumnSpan="2" Margin="5, 5, 5, 0">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding KillTagCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="{DynamicResource QuickWriteHeader}" Grid.Row="1" Grid.Column="1" Margin="5, 5, 0, 0" FontSize="14" IsEnabled="{Binding IsQuickWriteEnabled}">
+                            <StackPanel>
+                                <dxe:TextEdit EditValue="{Binding QuickWriteTagContent}" />
+                                <TextBlock TextWrapping="Wrap" Text="{DynamicResource QuickWriteTip}" Margin="0, 10, 0, 15" FontSize="10"/>
+                                <Button Content="{DynamicResource QuickWriteTag}">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding QuickWriteTagCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                            </StackPanel>
+                        </GroupBox>
+                    </Grid>
+                </Grid>
+            </dxwui:PageViewItem>
+            <dxwui:PageViewItem Header="{DynamicResource WorkmodePage}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Separator Background="#FFE5E5E5"/>
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Margin="5, 5, 5, 5">
+                            <GroupBox Header="{DynamicResource WorkModeSelect}" FontSize="14" Margin="0, 0, 0, 5">
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton Content="{DynamicResource MasterSlaveMode}" IsChecked="{Binding MasterSlaveMode}" Margin="5"/>
+                                    <RadioButton Content="{DynamicResource TimingMode}" IsChecked="{Binding TimingMode}" Margin="5"/>
+                                    <RadioButton Content="{DynamicResource  TriggerMode}" IsChecked="{Binding TriggerMode}" Margin="5"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="{DynamicResource AdjacentDiscr}" FontSize="14" Margin="0, 5, 0, 5">
+                                <StackPanel Margin="5">
+                                    <dxe:CheckEdit Content="{DynamicResource AdjacentDiscrId}" IsChecked="{Binding AdjacentDiscriminant}"/>
+                                    <StackPanel Orientation="Horizontal" Margin="5">
+                                        <Label Content="{DynamicResource AdjacentDiscrTime}"/>
+                                        <dxe:TextEdit Text="10" MinWidth="40" Margin="5, 0, 5, 0" EditValue="{Binding AdjacentDiscriminantTime}" Mask="n0" MaskType="Numeric"/>
+                                        <Label Content="*10ms"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="{DynamicResource Timers}" FontSize="14" Margin="0, 5, 0, 5" IsEnabled="{Binding IsTimingParamEnabled}">
+                                <StackPanel Orientation="Horizontal" Margin="5">
+                                    <Label Content="{DynamicResource TimingInterval}" Margin="5, 0, 0, 0"/>
+                                    <dxe:TextEdit Text="15" MinWidth="40" Margin="5, 0, 5, 0" EditValue="{Binding ReadTagTimeInterval}"/>
+                                    <Label Content="*10ms"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="{DynamicResource TriggerModeParam}" FontSize="14" Margin="0, 5, 0, 5" IsEnabled="{Binding IsTriggerModeEnabled}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="{DynamicResource TriggerSwitch}" Margin="5"/>
+                                    <ComboBox IsEditable="False" Grid.Row="0" Grid.Column="1" SelectedIndex="{Binding TriggerSwitch}" Margin="5">
+                                        <ComboBoxItem Content="{DynamicResource TriggerOff}"/>
+                                        <ComboBoxItem Content="{DynamicResource HighLevelTrigger}"/>
+                                    </ComboBox>
+                                    <Label Content="{DynamicResource OffDelay}" Grid.Row="1" Grid.Column="0" Margin="5"/>
+                                    <dxe:TextEdit MinWidth="40" Grid.Row="1" Grid.Column="1" Margin="5" EditValue="{Binding TriggerDelay}"/>
+                                    <Label Content="{DynamicResource LblSecond}" Grid.Row="1" Grid.Column="2" Margin="0, 5, 5, 5"/>
+                                </Grid>
+                            </GroupBox>
+                            <Grid Margin="0, 20, 0, 5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition/>
+                                </Grid.ColumnDefinitions>
+                                <Button Content="{DynamicResource DefaultParams}" Grid.Column="0" Margin="0, 5, 5, 5" FontSize="14" IsEnabled="{Binding IsWorkModePageDefaultParamButtonEnabled}">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding GetWorkModePageDefaultParametersCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                                <Button Content="{DynamicResource GetParams}" Grid.Column="1" Margin="5" FontSize="14" IsEnabled="{Binding IsWorkModePageGetParamButtonEnabled}">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding QueryWorkModePageParametersCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                                <Button Content="{DynamicResource SetParams}" Grid.Column="2" Margin="5, 5, 0, 5" FontSize="14" IsEnabled="{Binding IsWorkModePageSetParamButtonEnabled}">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding SetWorkModePageParametersCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                            </Grid>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="5, 5, 0, 0">
+                            <GroupBox Header="{DynamicResource CommunicationInterfaceSettings}" FontSize="14">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Label Content="{DynamicResource CommunicationInterfaceType}" Grid.Row="0" Grid.Column="0" Margin="0, 5, 0, 5"/>
+                                    <ComboBox IsEditable="False" MinWidth="40" Grid.Row="0" Grid.Column="1" Margin="5, 5, 0, 5" SelectedIndex="{Binding CommunicationInterfaceType}">
+                                        <ComboBoxItem>RS-485</ComboBoxItem>
+                                        <ComboBoxItem>Wiegand</ComboBoxItem>
+                                        <ComboBoxItem>RS-232</ComboBoxItem>
+                                    </ComboBox>
+                                    <GroupBox Header="{DynamicResource Rs232Param}" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="0, 5, 0, 5" IsEnabled="{Binding IsRs232ParamsEnabled}">
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <Label Content="{DynamicResource LblBaudrate}" Margin="5, 5, 0, 0"/>
+                                            <ComboBox IsEditable="False" MinWidth="100" Margin="5" SelectedIndex="{Binding Rs232BaudRate}">
+                                                <ComboBoxItem>9600bps</ComboBoxItem>
+                                                <ComboBoxItem>19200bps</ComboBoxItem>
+                                                <ComboBoxItem>38400bps</ComboBoxItem>
+                                                <ComboBoxItem>115200bps</ComboBoxItem>
+                                            </ComboBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="{DynamicResource Rs485Param}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0, 5, 0, 5" IsEnabled="{Binding IsRs485ParamsEnabled}">
+                                        <StackPanel Orientation="Horizontal" Margin="5">
+                                            <Label Content="{DynamicResource LblBaudrate}" Margin="5, 0, 0, 0"/>
+                                            <ComboBox IsEditable="False" MinWidth="100" Margin="5, 0, 5, 0" SelectedIndex="{Binding Rs485BaudRate}">
+                                                <ComboBoxItem>9600bps</ComboBoxItem>
+                                                <ComboBoxItem>19200bps</ComboBoxItem>
+                                                <ComboBoxItem>38400bps</ComboBoxItem>
+                                                <ComboBoxItem>57600bps</ComboBoxItem>
+                                                <ComboBoxItem>115200bps</ComboBoxItem>
+                                            </ComboBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <GroupBox Header="{DynamicResource WiegandParam}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0, 5, 0, 5"  IsEnabled="{Binding IsWiegandParamsEnabled}">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Label Content="{DynamicResource WiegandProtocol}" Grid.Row="0" Grid.Column="0" Margin="5, 0, 5, 5"/>
+                                            <ComboBox IsEditable="False" Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="5, 0, 5, 5" SelectedIndex="{Binding WiegandProtocol}">
+                                                <ComboBoxItem>Wiegand26</ComboBoxItem>
+                                                <ComboBoxItem>Wiegand34</ComboBoxItem>
+                                                <ComboBoxItem>Wiegand32</ComboBoxItem>
+                                            </ComboBox>
+                                            <Label Content="{DynamicResource PulseWidth}" Grid.Row="1" Grid.Column="0" Margin="5, 0, 5, 5"/>
+                                            <dxe:TextEdit Grid.Row="1" Grid.Column="1" Margin="5, 0, 5, 5" EditValue="{Binding WiegandWidth}"/>
+                                            <Label Content="*10us" Grid.Row="1" Grid.Column="2"/>
+                                            <Label Content="{DynamicResource PulsePeriod}" Grid.Row="2" Grid.Column="0" Margin="5, 0, 5, 5"/>
+                                            <dxe:TextEdit Grid.Row="2" Grid.Column="1" Margin="5, 0, 5, 5" EditValue="{Binding WiegandPeriod}"/>
+                                            <Label Content="*100us" Grid.Row="2" Grid.Column="2"/>
+                                        </Grid>
+                                    </GroupBox>
+                                </Grid>
+                            </GroupBox>
+                            <GroupBox Header="{DynamicResource DeviceNumber}" FontSize="14"  Margin="0, 5, 0, 5">
+                                <StackPanel Orientation="Horizontal" Margin="10, 5, 5, 0">
+                                    <Label Content="{DynamicResource DeviceNumberWithRisk}"/>
+                                    <ComboBox IsEditable="False" MinWidth="80" Margin="5, 0, 0, 0" SelectedIndex="{Binding DeviceNumber}" ItemsSource="{Binding DeviceNumberCollection}"/>
+                                </StackPanel>
+                            </GroupBox>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </dxwui:PageViewItem>
+            <dxwui:PageViewItem Header="{DynamicResource ParamPage}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Separator Background="#FFE5E5E5"/>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <GroupBox Header="{DynamicResource PowerSetting}" Grid.Column="0" Grid.ColumnSpan="2" Margin="5, 5, 5, 5" FontSize="14">
+                                <StackPanel Orientation="Horizontal">
+                                    <Label Content="{DynamicResource Power}"/>
+                                    <dxe:SpinEdit MinValue="1" MaxValue="150" Increment="1" MinWidth="50" EditValue="{Binding TransmitPower}" IsTextEditable="True" IsFloatValue="False"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="{DynamicResource AntennaSetting}" Grid.Column="2" Grid.ColumnSpan="4" Margin="0, 5, 0, 5" FontSize="14">
+                                <StackPanel Orientation="Horizontal">
+                                    <dxe:CheckEdit Content="{DynamicResource Antenna1}" IsChecked="{Binding Antenna1Checked}"/>
+                                    <dxe:CheckEdit Content="{DynamicResource Antenna2}" IsChecked="{Binding Antenna2Checked}" Margin="5, 0, 0, 0"/>
+                                    <dxe:CheckEdit Content="{DynamicResource Antenna3}" IsChecked="{Binding Antenna3Checked}" Margin="5, 0, 0, 0"/>
+                                    <dxe:CheckEdit Content="{DynamicResource Antenna4}" IsChecked="{Binding Antenna4Checked}" Margin="5, 0, 0, 0"/>
+                                </StackPanel>
+                            </GroupBox>
+                            <GroupBox Header="{DynamicResource IdentifyTagType}" Grid.Column="6" Grid.ColumnSpan="3" Margin="5, 5, 0, 5" FontSize="14">
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton Content="{DynamicResource IdentifySingle}" IsChecked="{Binding SingleTag}"/>
+                                    <RadioButton Content="{DynamicResource IdentifyMulti}" Margin="10, 0, 0, 0" IsChecked="{Binding MultiTag}"/>
+                                </StackPanel>
+                            </GroupBox>
+                        </Grid>
+                        <GroupBox Grid.Row="1" Header="{DynamicResource FrequencySetting}" FontSize="14" Margin="5, 5, 0, 5">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <GroupBox Header="{DynamicResource HoppingSet}">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <RadioButton Content="{DynamicResource Hopping}" Margin="5, 0, 0, 0" IsChecked="{Binding HoppingChecked}"/>
+                                            <RadioButton Content="{DynamicResource FixedFrequency}" Margin="5, 0, 0, 0" IsChecked="{Binding FixedFrequencyChecked}"/>
+                                            <ComboBox IsEditable="False" MinWidth="120" Margin="5, 0, 0, 0" IsEnabled="{Binding IsFixedFrequencyEnabled}" SelectedIndex="{Binding Frequency}">
+                                                <ComboBoxItem>1--902.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>2--903.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>3--903.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>4--904.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>5--904.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>6--905.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>7--905.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>8--906.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>9--906.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>10--907.0MHz</ComboBoxItem>
+
+                                                <ComboBoxItem>11--907.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>12--908.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>13--908.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>14--909.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>15--909.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>16--910.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>17--910.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>18--911.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>19--911.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>20--912.0MHz</ComboBoxItem>
+
+                                                <ComboBoxItem>21--912.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>22--913.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>23--913.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>24--914.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>25--914.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>26--915.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>27--915.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>28--916.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>29--916.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>30--917.0MHz</ComboBoxItem>
+
+                                                <ComboBoxItem>31--917.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>32--918.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>33--918.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>34--919.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>35--919.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>36--920.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>37--920.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>38--921.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>39--921.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>40--922.0MHz</ComboBoxItem>
+
+                                                <ComboBoxItem>41--922.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>42--923.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>43--923.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>44--924.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>45--924.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>46--925.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>47--925.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>48--926.0MHz</ComboBoxItem>
+                                                <ComboBoxItem>49--926.5MHz</ComboBoxItem>
+                                                <ComboBoxItem>50--927.0MHz</ComboBoxItem>
+                                            </ComboBox>
+                                        </StackPanel>
+                                    </GroupBox>
+                                    <StackPanel Orientation="Horizontal" Margin="5">
+                                        <Button Content="{DynamicResource DefaultParams}" Margin="5" FontSize="14" IsEnabled="{Binding IsReaderParamPageDefaultButtonEnabled}">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:EventToCommand EventName="Click" Command="{Binding GetDefaultReaderParamsPageParamsCommand}"/>
+                                            </dxmvvm:Interaction.Behaviors>
+                                        </Button>
+                                        <Button Content="{DynamicResource GetParams}" Margin="5" FontSize="14" IsEnabled="{Binding IsReaderParamPageQueryParamsButtonEnabled}">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:EventToCommand EventName="Click" Command="{Binding QueryReaderParamPageParamsCommand}"/>
+                                            </dxmvvm:Interaction.Behaviors>
+                                        </Button>
+                                        <Button Content="{DynamicResource SetParams}" Margin="5" FontSize="14" IsEnabled="{Binding IsReaderParamPageSetParamsButtonEnabled}">
+                                            <dxmvvm:Interaction.Behaviors>
+                                                <dxmvvm:EventToCommand EventName="Click" Command="{Binding SetReaderParamPageParamsCommand}"/>
+                                            </dxmvvm:Interaction.Behaviors>
+                                        </Button>
+                                    </StackPanel>
+                                </StackPanel>
+                                <GroupBox Header="{DynamicResource SelectBand}" FontSize="14" Margin="0, 5, 0, 0" IsEnabled="{Binding IsBandsEnabled}">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                            <ColumnDefinition/>
+                                        </Grid.ColumnDefinitions>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency1}" Grid.Row="0" Grid.Column="0" FontSize="12" IsChecked="{Binding Band1}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency2}" Grid.Row="0" Grid.Column="1" FontSize="12" IsChecked="{Binding Band2}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency3}" Grid.Row="0" Grid.Column="2" FontSize="12" IsChecked="{Binding Band3}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency4}" Grid.Row="0" Grid.Column="3" FontSize="12" IsChecked="{Binding Band4}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency5}" Grid.Row="0" Grid.Column="4" FontSize="12" IsChecked="{Binding Band5}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency6}" Grid.Row="0" Grid.Column="5" FontSize="12" IsChecked="{Binding Band6}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency7}" Grid.Row="0" Grid.Column="6" FontSize="12" IsChecked="{Binding Band7}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency8}" Grid.Row="0" Grid.Column="7" FontSize="12" IsChecked="{Binding Band8}"/>
+
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency9}" Grid.Row="1" Grid.Column="0" FontSize="12" IsChecked="{Binding Band9}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency10}" Grid.Row="1" Grid.Column="1" FontSize="12" IsChecked="{Binding Band10}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency11}" Grid.Row="1" Grid.Column="2" FontSize="12" IsChecked="{Binding Band11}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency12}" Grid.Row="1" Grid.Column="3" FontSize="12" IsChecked="{Binding Band12}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency13}" Grid.Row="1" Grid.Column="4" FontSize="12" IsChecked="{Binding Band13}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency14}" Grid.Row="1" Grid.Column="5" FontSize="12" IsChecked="{Binding Band14}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency15}" Grid.Row="1" Grid.Column="6" FontSize="12" IsChecked="{Binding Band15}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency16}" Grid.Row="1" Grid.Column="7" FontSize="12" IsChecked="{Binding Band16}"/>
+
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency17}" Grid.Row="2" Grid.Column="0" FontSize="12" IsChecked="{Binding Band17}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency18}" Grid.Row="2" Grid.Column="1" FontSize="12" IsChecked="{Binding Band18}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency19}" Grid.Row="2" Grid.Column="2" FontSize="12" IsChecked="{Binding Band19}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency20}" Grid.Row="2" Grid.Column="3" FontSize="12" IsChecked="{Binding Band20}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency21}" Grid.Row="2" Grid.Column="4" FontSize="12" IsChecked="{Binding Band21}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency22}" Grid.Row="2" Grid.Column="5" FontSize="12" IsChecked="{Binding Band22}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency23}" Grid.Row="2" Grid.Column="6" FontSize="12" IsChecked="{Binding Band23}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency24}" Grid.Row="2" Grid.Column="7" FontSize="12" IsChecked="{Binding Band24}"/>
+
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency25}" Grid.Row="3" Grid.Column="0" FontSize="12" IsChecked="{Binding Band25}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency26}" Grid.Row="3" Grid.Column="1" FontSize="12" IsChecked="{Binding Band26}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency27}" Grid.Row="3" Grid.Column="2" FontSize="12" IsChecked="{Binding Band27}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency28}" Grid.Row="3" Grid.Column="3" FontSize="12" IsChecked="{Binding Band28}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency29}" Grid.Row="3" Grid.Column="4" FontSize="12" IsChecked="{Binding Band29}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency30}" Grid.Row="3" Grid.Column="5" FontSize="12" IsChecked="{Binding Band30}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency31}" Grid.Row="3" Grid.Column="6" FontSize="12" IsChecked="{Binding Band31}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency32}" Grid.Row="3" Grid.Column="7" FontSize="12" IsChecked="{Binding Band32}"/>
+
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency33}" Grid.Row="4" Grid.Column="0" FontSize="12" IsChecked="{Binding Band33}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency34}" Grid.Row="4" Grid.Column="1" FontSize="12" IsChecked="{Binding Band34}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency35}" Grid.Row="4" Grid.Column="2" FontSize="12" IsChecked="{Binding Band35}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency36}" Grid.Row="4" Grid.Column="3" FontSize="12" IsChecked="{Binding Band36}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency37}" Grid.Row="4" Grid.Column="4" FontSize="12" IsChecked="{Binding Band37}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency38}" Grid.Row="4" Grid.Column="5" FontSize="12" IsChecked="{Binding Band38}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency39}" Grid.Row="4" Grid.Column="6" FontSize="12" IsChecked="{Binding Band39}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency40}" Grid.Row="4" Grid.Column="7" FontSize="12" IsChecked="{Binding Band40}"/>
+
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency41}" Grid.Row="5" Grid.Column="0" FontSize="12" IsChecked="{Binding Band41}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency42}" Grid.Row="5" Grid.Column="1" FontSize="12" IsChecked="{Binding Band42}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency43}" Grid.Row="5" Grid.Column="2" FontSize="12" IsChecked="{Binding Band43}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency44}" Grid.Row="5" Grid.Column="3" FontSize="12" IsChecked="{Binding Band44}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency45}" Grid.Row="5" Grid.Column="4" FontSize="12" IsChecked="{Binding Band45}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency46}" Grid.Row="5" Grid.Column="5" FontSize="12" IsChecked="{Binding Band46}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency47}" Grid.Row="5" Grid.Column="6" FontSize="12" IsChecked="{Binding Band47}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency48}" Grid.Row="5" Grid.Column="7" FontSize="12" IsChecked="{Binding Band48}"/>
+
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency49}" Grid.Row="6" Grid.Column="0" FontSize="12" IsChecked="{Binding Band49}"/>
+                                        <dxe:CheckEdit Content="{DynamicResource Frequency50}" Grid.Row="6" Grid.Column="1" FontSize="12" IsChecked="{Binding Band50}"/>
+                                    </Grid>
+                                </GroupBox>
+                            </StackPanel>
+                        </GroupBox>
+                        <GroupBox Grid.Row="2" Header="{DynamicResource StrOther}" FontSize="14" Margin="5, 5, 0, 0">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Top">
+                                    <Label Content="{DynamicResource StrBuzzer}"/>
+                                    <ComboBox IsEditable="False" MinWidth="80" SelectedIndex="{Binding Buzzer}">
+                                        <ComboBoxItem Content="{DynamicResource StrClose}"/>
+                                        <ComboBoxItem Content="{DynamicResource StrContinuousBb}"/>
+                                        <ComboBoxItem Content="{DynamicResource StrOnlyBeep}"/>
+                                    </ComboBox>
+                                    <Label Content="{DynamicResource StrRelays}" Margin="20, 0, 0, 0"/>
+                                    <ComboBox IsEditable="False" MinWidth="80" SelectedIndex="{Binding Relays}">
+                                        <ComboBoxItem Content="{DynamicResource StrClose}"/>
+                                        <ComboBoxItem Content="{DynamicResource StrOpen}"/>
+                                    </ComboBox>
+                                    <Button Content="{DynamicResource StrSetup}" MinWidth="80"  Margin="5, 0, 5, 0" IsEnabled="{Binding IsSetupButtonEnable}">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand EventName="Click" Command="{Binding SetBuzzerAndRelaysCommand}"/>
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </Button>
+                                </StackPanel>
+                                <Button Content="{DynamicResource StrReset}" MinWidth="80" MaxHeight="50"  Margin="5, 0, 5, 0" Grid.Column="1" IsEnabled="{Binding IsResetButtonEnable}" VerticalAlignment="Top">
+                                    <dxmvvm:Interaction.Behaviors>
+                                        <dxmvvm:EventToCommand EventName="Click" Command="{Binding ResetCommand}"/>
+                                    </dxmvvm:Interaction.Behaviors>
+                                </Button>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </Grid>
+            </dxwui:PageViewItem>
+            <dxwui:PageViewItem Header="{DynamicResource LiveDevicePage}">
+                <Grid IsEnabled="{Binding IsLiveDevicePageContentEnabled}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Separator Background="#FFE5E5E5"/>
+                    <Grid Grid.Row="1">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <dxg:GridControl FontSize="14" Margin="5, 10, 0, 5" ItemsSource="{Binding SearchDevices}" SelectedItem="{Binding SelectDevice}" SelectionMode="Row" IsFilterEnabled="False" ShowAllTableValuesInCheckedFilterPopup="False" AllowColumnMRUFilterList="False" AllowMRUFilterList="False">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand EventName="SelectedItemChanged" Command="{Binding DeviceRowSelectedCommand}"/>
+                            </dxmvvm:Interaction.Behaviors>
+                            <dxg:GridControl.Columns>
+                                <dxg:GridColumn Header="{DynamicResource Number}" FieldName="Id" Width="50" AllowResizing="False" FixedWidth="true" ReadOnly="True"/>
+                                <dxg:GridColumn Header="{DynamicResource DevIpAddress}" FieldName="IpAddress" ReadOnly="True"/>
+                                <dxg:GridColumn Header="{DynamicResource DevPort}" FieldName="Port" Width="40" ReadOnly="True"/>
+                                <dxg:GridColumn Header="{DynamicResource DevMac}" FieldName="MacAddress" Width="150" ReadOnly="True"/>
+                                <dxg:GridColumn Header="{DynamicResource DevMode}" FieldName="Mode" Width="80" ReadOnly="True"/>
+                            </dxg:GridControl.Columns>
+                            <dxg:GridControl.View>
+                                <dxg:TableView AllowFixedGroups="false" ShowGroupedColumns="false" AllowCascadeUpdate="True" AllowScrollAnimation="True" NavigationStyle="Row" AutoWidth="True" ShowFixedTotalSummary="True" AllowEditing="False" ShowGroupPanel="False" AllowFilterEditor="False" AllowColumnFiltering="False"/>
+                            </dxg:GridControl.View>
+                        </dxg:GridControl>
+                        <Button Grid.Row="0" Content="{DynamicResource Search}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,20,15" MinWidth="80">
+                            <dxmvvm:Interaction.Behaviors>
+                                <dxmvvm:EventToCommand EventName="Click" Command="{Binding SearchDeviceCommand}"/>
+                            </dxmvvm:Interaction.Behaviors>
+                        </Button>
+                        <GroupBox Header="{DynamicResource ParameterSettings}" Grid.Row="1" Margin="5, 5, 0, 0" FontSize="14" IsEnabled="{Binding IsSetDeviceParamsEnabled}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <GroupBox Header="{DynamicResource SpParameters}" Grid.Row="0" FontSize="12">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Label Content="{DynamicResource LblBaudrate}" Grid.Column="0" FontSize="12" Margin="5, 0, 0, 0"/>
+                                        <ComboBox Grid.Column="1" FontSize="12" ItemsSource="{Binding BaudRateList}" SelectedIndex="{Binding SpBaudrate}" Margin="5, 0, 0, 0"/>
+                                        <Label Content="{DynamicResource LblDataBits}" Grid.Column="2" FontSize="12" Margin="10, 0, 0, 0"/>
+                                        <ComboBox Grid.Column="3" FontSize="12" SelectedIndex="{Binding DataBits}" Margin="5, 0, 0, 0">
+                                            <ComboBoxItem Content="5" FontSize="12"/>
+                                            <ComboBoxItem Content="6" FontSize="12"/>
+                                            <ComboBoxItem Content="7" FontSize="12"/>
+                                            <ComboBoxItem Content="8" FontSize="12"/>
+                                        </ComboBox>
+                                        <Label Content="{DynamicResource LblStopBits}" Grid.Column="4" FontSize="12" Margin="10, 0, 0, 0"/>
+                                        <ComboBox Grid.Column="5" FontSize="12" SelectedIndex="{Binding StopBits}" Margin="5, 0, 0, 0">
+                                            <ComboBoxItem Content="1"/>
+                                            <ComboBoxItem Content="2"/>
+                                        </ComboBox>
+                                        <Label Content="{DynamicResource LblCheckBits}" Grid.Column="6" FontSize="12" Margin="10, 0, 0, 0"/>
+                                        <ComboBox Grid.Column="7" SelectedIndex="{Binding CheckBits}" Margin="5, 0, 0, 0">
+                                            <ComboBoxItem Content="{DynamicResource ItemNone}"/>
+                                            <ComboBoxItem Content="{DynamicResource ItemOdd}"/>
+                                            <ComboBoxItem Content="{DynamicResource ItemEven}"/>
+                                            <ComboBoxItem Content="{DynamicResource ItemMark}"/>
+                                            <ComboBoxItem Content="{DynamicResource ItemClear}"/>
+                                        </ComboBox>
+                                    </Grid>
+                                </GroupBox>
+                                <GroupBox Header="{DynamicResource ModuleParameters}" Grid.Row="1" FontSize="12" Margin="0, 5, 0, 0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition/>
+                                        </Grid.RowDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="55"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Label Content="{DynamicResource LblDevMode}" Grid.Column="0" FontSize="12" Margin="5, 0, 0, 0"/>
+                                            <ComboBox Grid.Column="1" FontSize="12" SelectedIndex="{Binding DeviceMode}" Margin="5, 0, 0, 0">
+                                                <ComboBoxItem Content="UDP Client"/>
+                                                <ComboBoxItem Content="TCP Client"/>
+                                                <ComboBoxItem Content="UDP Server"/>
+                                                <ComboBoxItem Content="TCP Server"/>
+                                            </ComboBox>
+                                            <Label Content="{DynamicResource LblIpAddress}" Grid.Column="2" FontSize="12" Margin="10, 0, 0, 0"/>
+                                            <TextBox Grid.Column="3" Text="{Binding SetIp}" FontSize="12" Margin="5, 0, 0, 0"/>
+                                            <Label Content="{DynamicResource Port}" Grid.Column="4" FontSize="12" Margin="10, 0, 0, 0"/>
+                                            <TextBox Grid.Column="5" Text="{Binding SetPort}" FontSize="12" Margin="5, 0, 0, 0"/>
+                                            <Label Content="{DynamicResource LblSubNetMask}" Grid.Column="6" FontSize="12" Margin="10, 0, 0, 0"/>
+                                            <TextBox Grid.Column="7" Text="{Binding SetSubNetMask}" FontSize="12" Margin="5, 0, 0, 0"/>
+                                        </Grid>
+                                        <Grid Grid.Row="1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Separator Grid.Column="0" VerticalAlignment="Center"/>
+                                            <Label Grid.Column="1" Content="{DynamicResource StrDevParamsSetTips}" FontSize="10" Margin="5"/>
+                                            <Separator Grid.Column="2" VerticalAlignment="Center"/>
+                                        </Grid>
+                                        <Grid Grid.Row="2" IsEnabled="{Binding IsTargetParamsEnabled}">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="55"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Label Content="{DynamicResource LblDestinationIp}" Grid.Column="0" FontSize="12" Margin="5, 0, 0, 0"/>
+                                            <TextBox Grid.Column="1" Text="{Binding SetTargetIp}" FontSize="12" Margin="5, 0, 0, 0"/>
+                                            <Label Content="{DynamicResource LblDestinationPort}" Grid.Column="2" FontSize="12" Margin="10, 0, 0, 0"/>
+                                            <TextBox Grid.Column="3" Text="{Binding SetTargetPort}" FontSize="12" Margin="5, 0, 0, 0"/>
+                                            <Label Content="{DynamicResource LblGateway}" Grid.Column="4" FontSize="12" Margin="10, 0, 0, 0"/>
+                                            <TextBox Grid.Column="5" Text="{Binding SetGateway}" FontSize="12" Margin="5, 0, 0, 0"/>
+                                        </Grid>
+                                    </Grid>
+                                </GroupBox>
+                                <StackPanel Orientation="Horizontal" Grid.Row="2" Margin="0, 15, 0, 0"  HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <Button Content="{DynamicResource DefaultParams}" Margin="5, 0, 5, 0" MinWidth="100" FontSize="14">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand EventName="Click" Command="{Binding GetSearchDeviceDefaultParamsCommand}"/>
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </Button>
+                                    <Button Content="{DynamicResource SetParams}" Margin="5, 0, 0, 0" MinWidth="100" FontSize="14">
+                                        <dxmvvm:Interaction.Behaviors>
+                                            <dxmvvm:EventToCommand EventName="Click" Command="{Binding SetDeviceParamsCommand}"/>
+                                        </dxmvvm:Interaction.Behaviors>
+                                    </Button>
+                                </StackPanel>
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                </Grid>
+            </dxwui:PageViewItem>
+        </dxwui:PageView>
+        <!--状态栏-->
+        <dxb:StatusBarControl Height="30" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" BarItemsAlignment="Default" Margin="0,0.333,0.333,-0.333">
+            <dxb:BarStaticItem x:Name="Version" Content="{Binding VersionInfo}"/>
+            <dxb:BarStaticItem x:Name="Tip" AutoSizeMode="Fill" ContentAlignment="Right" Content="{Binding StatusTipInfo}"/>
+        </dxb:StatusBarControl>
+        <!--<dxga:StateIndicatorControl Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="3"/>-->
+        <dx:WaitIndicator DeferedVisibility="{Binding IsShowLoading}" Content="Loading..." Grid.Row="0" Grid.RowSpan="2" Grid.ColumnSpan="3"
+                          Grid.Column="0">
+            <dx:WaitIndicator.ContentTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{DynamicResource StrWaiting}" FontSize="20"/>
+                        <TextBlock Text="{DynamicResource StrProcessing}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </dx:WaitIndicator.ContentTemplate>
+        </dx:WaitIndicator>
+    </Grid>
+</UserControl>

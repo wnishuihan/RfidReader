@@ -1,0 +1,12 @@
+﻿<dx:ThemedWindow 
+    x:Class="RfidReader.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:dx="http://schemas.devexpress.com/winfx/2008/xaml/core"
+    xmlns:Views="clr-namespace:RfidReader.Views"
+    
+    Title="RFID Reader" Height="660" Width="970" WindowStartupLocation="CenterScreen" Icon="Images/Card.png">
+    <Grid>
+        <Views:MainView/>
+    </Grid>
+</dx:ThemedWindow>
