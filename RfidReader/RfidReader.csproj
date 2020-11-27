@@ -145,7 +145,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
-    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Card.png" />
@@ -166,6 +165,10 @@
       <Project>{e6b0ea07-1962-4312-868d-a3b8508dce02}</Project>
       <Name>RfidLibrary</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Gifs\1.splash.gif" />
+    <Resource Include="Gifs\2.demo.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
