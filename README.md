@@ -1,4 +1,4 @@
-# RfidReader(RFID读卡器)
+# RfidReader(RFID读写器)
 RFID Reader, for example, Inventery tag, Indentify tag and configration reader
 
 ![image](https://github.com/wnishuihan/RfidReader/blob/master/RfidReader/Gifs/1.splash.gif)
